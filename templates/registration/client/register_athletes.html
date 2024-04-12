@@ -1,0 +1,60 @@
+{% extends 'base/base.html' %}
+{% block title %}Register Athletes{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+    <div class="text-center mb-3">
+        <h3>Register Athletes</h3>
+        <small class="text-muted">
+            {{ tournament.name }} – {{ tournament.edition }} Edition
+        </small>
+    </div>
+
+    <!-- Existing Athletes -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Select Existing Athletes</h5>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="card-body">
+                {{ form.category.label_tag }}
+                {{ form.category }}
+
+                <hr>
+
+                <label class="font-weight-bold">
+                    Athletes (from database)
+                </label>
+                {{ form.athletes }}
+            </div>
+
+            <div class="card-footer text-center">
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-save"></i> Register Selected
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- New Athlete -->
+    <div class="card">
+        <div class="card-header bg-secondary text-white">
+            <h5 class="mb-0">Athlete Not in List?</h5>
+        </div>
+        <div class="card-body text-center">
+            <p class="text-muted">
+                If the athlete is not in the database, register them first.
+            </p>
+
+            <a href="{% url 'athlete_create' %}?tournament={{ tournament.id }}"
+               class="btn btn-primary">
+                <i class="fas fa-user-plus"></i> Register New Athlete
+            </a>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
