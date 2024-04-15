@@ -1,0 +1,163 @@
+{% extends 'base/base.html' %}
+{% block title %}Tournament Results{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+    <div class="text-center mb-3">
+        <h3>Tournament Results</h3>
+    </div>
+
+    <!-- FILTERS -->
+    <div class="row mb-3">
+        <div class="col-md-3">
+            <label>Tournament</label>
+            <select id="tournamentFilter" class="form-control">
+                <option value="">All Tournaments</option>
+                {% for t in tournaments %}
+                    <option value="{{ t.id }}">{{ t.name }} {{ t.edition }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label>Category</label>
+            <select id="categoryFilter" class="form-control">
+                <option value="">All Categories</option>
+                {% for c in categories %}
+                    <option value="{{ c.id }}">{{ c.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label>Participant</label>
+            <select id="participantFilter" class="form-control">
+                <option value="">All Participants</option>
+                {% for p in participants %}
+                    <option value="{{ p.id }}">{{ p.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3 d-flex align-items-end">
+            <button id="clearFilters" class="btn btn-secondary w-100">Clear Filters</button>
+        </div>
+    </div>
+
+    <!-- RESULTS TABLE -->
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <strong>Results</strong>
+            <button id="batchPdfBtn" class="btn btn-success btn-sm float-right ml-2">
+                Export Selected PDFs
+            </button>
+            <a href="{% url 'results_create' %}" class="btn btn-primary btn-sm float-right">Add Result</a>
+        </div>
+
+        <div class="card-body">
+            <table id="resultsTable" class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" id="selectAll"></th>
+                        <th>#</th>
+                        <th>Tournament</th>
+                        <th>Participant</th>
+                        <th>Category</th>
+                        <th>Rank</th>
+                        <th>Score</th>
+                        <th>Medal</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in results %}
+                    <tr data-result-id="{{ r.id }}">
+    <td><input type="checkbox" class="row-select"></td>
+    <td>{{ forloop.counter }}</td>
+    <td data-tournament="{{ r.tournament.id }}">{{ r.tournament.name }} {{ r.tournament.edition }}</td>
+    <td data-participant="{% if r.athlete %}{{ r.athlete.id }}{% else %}{{ r.coach.id }}{% endif %}">
+        {% if r.athlete %}
+            {{ r.athlete.name }}
+        {% else %}
+            {{ r.coach.name }}
+        {% endif %}
+    </td>
+    <td data-category="{{ r.category.id }}">{{ r.category.name }}</td>
+    <td>{{ r.rank }}</td>
+    <td>{{ r.score }}</td>
+    <td>{{ r.medal_icon }}</td>
+    <td>
+        <a href="{% url 'results_update' r.pk %}" class="btn btn-warning btn-sm">Edit</a>
+        <a href="{% url 'results_delete' r.pk %}" class="btn btn-danger btn-sm">Delete</a>
+    </td>
+</tr>
+
+                    {% empty %}
+                    <tr>
+                        <td colspan="9" class="text-center">No results found</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<!-- DATATABLES -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+<script>
+$(function() {
+    let table = $('#resultsTable').DataTable({
+        pageLength: 50,
+        order: [[2,'asc'], [4,'asc']], // Tournament, Category
+    });
+
+    // FILTERS
+    $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+        let tournament = $('#tournamentFilter').val();
+        let category = $('#categoryFilter').val();
+        let participant = $('#participantFilter').val();
+
+        let rowTournament = $('#resultsTable tbody tr').eq(dataIndex).find('td[data-tournament]').data('tournament');
+        let rowCategory = $('#resultsTable tbody tr').eq(dataIndex).find('td[data-category]').data('category');
+        let rowParticipant = $('#resultsTable tbody tr').eq(dataIndex).find('td[data-participant]').data('participant');
+
+        if(tournament && rowTournament != tournament) return false;
+        if(category && rowCategory != category) return false;
+        if(participant && rowParticipant != participant) return false;
+
+        return true;
+    });
+
+    $('#tournamentFilter, #categoryFilter, #participantFilter').on('change', function() {
+        table.draw();
+    });
+
+    $('#clearFilters').on('click', function() {
+        $('#tournamentFilter, #categoryFilter, #participantFilter').val('');
+        table.search('').columns().search('').draw();
+        $('#selectAll').prop('checked', false);
+        $('.row-select').prop('checked', false);
+    });
+
+    // SELECT ALL
+    $('#selectAll').on('click', function(){
+        let checked = this.checked;
+        $('#resultsTable tbody input.row-select').prop('checked', checked);
+    });
+
+    // BATCH PDF EXPORT
+    $('#batchPdfBtn').on('click', function(){
+        let ids = [];
+        $('#resultsTable tbody input.row-select:checked').each(function(){
+            ids.push($(this).closest('tr').data('result-id'));
+        });
+        if(ids.length === 0){ alert('Select at least one result'); return; }
+        let url = '{% url "results_batch_pdf_grouped" %}?ids[]=' + ids.join('&ids[]=');
+        window.open(url, '_blank');
+    });
+});
+</script>
+{% endblock %}
