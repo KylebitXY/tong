@@ -1,0 +1,139 @@
+{% extends 'base/base.html' %}
+{% load ordinal_filters %}
+{% block title %}Tournament Detail{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+    <!-- Page Header -->
+    <div class="row mb-3">
+        <div class="col-md-12 text-center">
+            <h2 class="font-weight-bold">
+                {{ tournament.name }} – {{ tournament.edition|ordinal_suffix }} Edition
+            </h2>
+            <small class="text-muted">
+                {{ tournament.start_date }} to {{ tournament.end_date }} | {{ tournament.location }}
+            </small>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="info-box bg-info">
+                <span class="info-box-icon"><i class="fas fa-users"></i></span>
+                <div class="info-box-content">
+                    <span class="info-box-text">Participants</span>
+                    <span class="info-box-number">{{ total_participants }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="info-box bg-success">
+                <span class="info-box-icon"><i class="fas fa-flag"></i></span>
+                <div class="info-box-content">
+                    <span class="info-box-text">Countries</span>
+                    <span class="info-box-number">{{ total_countries }}</span>
+                </div>
+            </div>
+        </div>
+  
+    <div class="col-md-3">
+            <div class="info-box bg-warning">
+                <span class="info-box-icon"><i class="fas fa-medal"></i></span>
+                <div class="info-box-content">
+                    <span class="info-box-text">Results</span>
+                    <span class="info-box-number">
+                        <a href="{% url 'results_list' %}?tournament={{ tournament.id }}" class="btn btn-warning">
+    <i class="fas fa-medal"></i> View Results
+</a>
+
+                    </span>
+                </div>
+            </div>
+        </div>
+  </div>
+    <!-- Tournament Details -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Tournament Information</h5>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-bordered table-striped mb-0">
+                <tbody>
+                    <tr>
+                        <th width="30%">Name</th>
+                        <td>{{ tournament.name }}</td>
+                    </tr>
+                    <tr>
+                        <th>Edition</th>
+                        <td>{{ tournament.edition|ordinal_suffix }}</td>
+                    </tr>
+                    <tr>
+                        <th>Start Date</th>
+                        <td>{{ tournament.start_date }}</td>
+                    </tr>
+                    <tr>
+                        <th>End Date</th>
+                        <td>{{ tournament.end_date }}</td>
+                    </tr>
+                    <tr>
+                        <th>Location</th>
+                        <td>{{ tournament.location }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="card">
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0">Tournament Actions</h5>
+        </div>
+        <div class="card-body text-center">
+
+            <!-- Registration Buttons -->
+            <div class="btn-group mb-3" role="group">
+                <a href="{% url 'register_athletes' tournament_id=tournament.id %}"
+                   class="btn btn-success">
+                    <i class="fas fa-user-plus"></i> Register Individual Athletes
+                </a>
+                <a href="{% url 'tournament_participants' tournament.id %}"
+   class="btn btn-dark">
+    <i class="fas fa-list"></i> View Participants
+</a>
+
+
+                <a href="{% url 'register_athletes' tournament_id=tournament.id %}?type=team"
+                   class="btn btn-info">
+                    <i class="fas fa-users"></i> Register Teams
+                </a>
+
+                <a href="{% url 'register_athletes' tournament_id=tournament.id %}?type=special"
+                   class="btn btn-secondary">
+                    <i class="fas fa-medal"></i> Special Technique / Events
+                </a>
+            </div>
+
+            <hr>
+
+            <!-- Management Buttons -->
+            <div class="btn-group" role="group">
+                <a href="{% url 'tournament_update' tournament.pk %}"
+                   class="btn btn-warning">
+                    <i class="fas fa-edit"></i> Edit Tournament
+                </a>
+
+                <a href="{% url 'tournament_list' %}"
+                   class="btn btn-primary">
+                    <i class="fas fa-arrow-left"></i> Back to Tournaments
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+{% endblock %}

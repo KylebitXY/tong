@@ -1,0 +1,246 @@
+{% extends 'base/base.html' %}
+{% block title %}Tournament Participants{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+    <div class="text-center mb-3">
+        <h3>{{ tournament.name }} – Participants</h3>
+        <small class="text-muted">{{ tournament.edition }} Edition</small>
+    </div>
+
+    <!-- FILTERS -->
+    <div class="row mt-3">
+
+        <div class="col-md-3">
+            <label>Country</label>
+            <select id="countryFilter" class="form-control">
+                <option value="">All Countries</option>
+                {% for c in countries %}
+                    <option value="{{ c.name|lower }}">{{ c.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- ✅ REGION / CLUB FILTER -->
+        <div class="col-md-3">
+            <label>Region / Club</label>
+            <select id="regionFilter" class="form-control">
+                <option value="">All Regions</option>
+                {% for r in regions %}
+                    <option value="{{ r.name|lower }}">{{ r.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <label>Gender</label>
+            <select id="genderFilter" class="form-control">
+                <option value="">All Genders</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <label>Belt</label>
+            <select id="beltFilter" class="form-control">
+                <option value="">All Belts</option>
+                {% for b in belts %}
+                    <option value="{{ b.name|lower }}">{{ b.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-1">
+            <label>Min Age</label>
+            <input type="number" id="ageMin" class="form-control">
+        </div>
+
+        <div class="col-md-1">
+            <label>Max Age</label>
+            <input type="number" id="ageMax" class="form-control">
+        </div>
+
+        <div class="col-md-2">
+            <label>Category</label>
+            <select id="categoryFilter" class="form-control">
+                <option value="">All</option>
+                {% for c in categories %}
+                    <option value="{{ c.name }}">{{ c.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <label>Weight Category</label>
+            <select id="weightCategoryFilter" class="form-control">
+                <option value="">All</option>
+                <option value="Fin Weight Division">Fin Weight Division</option>
+                <option value="Fly Weight Division">Fly Weight Division</option>
+                <option value="Bantam Weight Division">Bantam Weight Division</option>
+                <option value="Feather Weight Division">Feather Weight Division</option>
+                <option value="Light Weight Division">Light Weight Division</option>
+                <option value="Welter Weight Division">Welter Weight Division</option>
+                <option value="Middle Weight Division">Middle Weight Division</option>
+                <option value="Heavy Weight Division">Heavy Weight Division</option>
+                <option value="Super Heavy Weight Division">Super Heavy Weight Division</option>
+                <option value="Super Heavy Weight Division Level 0">Super Heavy Weight Division Level 0</option>
+                <option value="Super Heavy Weight Division Level 1">Super Heavy Weight Division Level 1</option>
+                <option value="Unknown Category">Unknown Category</option>
+            </select>
+        </div>
+
+        <div class="col-md-1 d-flex align-items-end">
+            <button id="clearFilters" class="btn btn-secondary w-100">Clear</button>
+        </div>
+    </div>
+
+    <!-- ATHLETES TABLE -->
+    <div class="card mt-4">
+        <div class="card-header bg-primary text-white">
+            <strong>Individual Athletes</strong>
+
+            <!-- ✅ DOWNLOAD ALL -->
+            <a href="{% url 'generate_pdf_individual_batch' tournament.id %}"
+               class="btn btn-success btn-sm float-right ml-2">
+                Download ALL PDFs
+            </a>
+
+            <!-- ✅ DOWNLOAD SELECTED -->
+            <button id="batchPrintBtn" class="btn btn-warning btn-sm float-right ml-2">
+                Download SELECTED PDFs
+            </button>
+        </div>
+
+        <div class="card-body">
+            <table id="athletesTable" class="table table-bordered table-hover">
+                <thead>
+                <tr>
+                    <th><input type="checkbox" id="selectAll"></th>
+                    <th>#</th>
+                    <th>Athlete</th>
+                    <th>Country</th>
+                    <th>Region</th>
+                    <th>Category</th>
+                    <th>Coach</th>
+                    <th>Gender</th>
+                    <th>Age</th>
+                    <th>Belt</th>
+                    <th>Weight</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                {% for p in athletes %}
+                <tr data-athlete-id="{{ p.athlete.id }}">
+                    <td><input type="checkbox" class="row-select"></td>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ p.athlete }}</td>
+                    <td>{{ p.athlete.country.name }}</td>
+                    <td>{{ p.athlete.region.name|default:"—" }}</td>
+                    <td>
+                        {% for c in p.category.all %}
+                            {{ c.name }}{% if not forloop.last %}, {% endif %}
+                        {% empty %}—{% endfor %}
+                    </td>
+                    <td>{{ p.coach|default:"—" }}</td>
+                    <td>{{ p.athlete.gender|title }}</td>
+                    <td>{{ p.athlete.age }}</td>
+                    <td>{{ p.athlete.belt.name|default:"—" }}</td>
+                    <td>{{ p.athlete.weight }}</td>
+                    <td>
+                        <a href="{% url 'generate_pdf_individual' tournament.id p.athlete.id %}"
+                           class="btn btn-success btn-sm">
+                            PDF
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="12" class="text-center text-muted">
+                        No athletes registered
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="text-center mt-4">
+        <a href="{% url 'tournament_details' tournament.id %}" class="btn btn-primary">
+            ← Back to Tournament
+        </a>
+    </div>
+</div>
+
+<script>
+$(function () {
+
+    let table = $('#athletesTable').DataTable({
+        pageLength: 50,
+        ordering: true,
+        columnDefs: [
+            { orderable:false, targets:0 },
+            { orderable:false, targets:11 }
+        ]
+    });
+
+    // ================= FILTERS =================
+    $.fn.dataTable.ext.search.push(function (settings, data) {
+        let country = $('#countryFilter').val();
+        let region  = $('#regionFilter').val();
+        let gender  = $('#genderFilter').val();
+        let belt    = $('#beltFilter').val();
+
+        if(country && data[3].toLowerCase() !== country) return false;
+        if(region && data[4].toLowerCase() !== region) return false;
+        if(gender && data[7].toLowerCase() !== gender) return false;
+        if(belt && data[9].toLowerCase() !== belt) return false;
+
+        return true;
+    });
+
+    $('#countryFilter,#regionFilter,#genderFilter,#beltFilter').on('change',function(){
+        table.draw();
+    });
+
+    $('#clearFilters').on('click',function(){
+        $('select,input').val('');
+        table.draw();
+        $('#selectAll').prop('checked', false);
+        $('.row-select').prop('checked', false).closest('tr').removeClass('selected');
+    });
+
+    // ================= SELECTION =================
+    $('#selectAll').on('click', function(){
+        $('.row-select').prop('checked', this.checked)
+            .closest('tr').toggleClass('selected', this.checked);
+    });
+
+    $('.row-select').on('change', function(){
+        $(this).closest('tr').toggleClass('selected', this.checked);
+    });
+
+    // ================= BATCH PDF =================
+    $('#batchPrintBtn').on('click', function(){
+        let ids = [];
+        $('.row-select:checked').each(function(){
+            ids.push($(this).closest('tr').data('athlete-id'));
+        });
+
+        if(!ids.length){
+            alert('Select at least one athlete');
+            return;
+        }
+
+        let url = "{% url 'generate_pdf_individual_batch' tournament.id %}?athletes=" + ids.join(',');
+        window.open(url, '_blank');
+    });
+
+});
+</script>
+
+{% endblock %}

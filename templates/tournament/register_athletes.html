@@ -1,0 +1,157 @@
+{% extends 'base/base.html' %}
+{% block title %}Register Athletes{% endblock %}
+
+{% block content %}
+
+<div class="text-center mt-4">
+    <a href="{% url 'tournament_details' tournament.id %}"
+       class="btn btn-primary">
+        ← Back to Tournament
+    </a>
+</div>
+
+<div class="container-fluid">
+
+    <h4 class="text-center mb-3">
+        Register Athletes – {{ tournament.name }}
+    </h4>
+    <div class="row mb-3">
+    <div class="col-md-6">
+        <input type="text"
+               id="athleteSearch"
+               class="form-control"
+               placeholder="Search athlete by name or country...">
+    </div>
+
+    <div class="col-md-6 text-right">
+        <button class="btn btn-primary"
+                data-toggle="modal"
+                data-target="#addAthleteModal">
+            + Register New Athlete
+        </button>
+    </div>
+</div>
+
+
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            Select Athlete
+        </div>
+
+        <div class="card-body p-0">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Athlete</th>
+                        <th>Country</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for athlete in athletes %}
+                    <tr class="athlete-row"
+    data-name="{{ athlete.name|lower }}"
+    data-country="{{ athlete.country.name|lower }}">
+
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ athlete }}</td>
+                        <td>{{ athlete.country }}</td>
+                        <td>
+                            <button class="btn btn-success btn-sm"
+                                    data-toggle="modal"
+                                    data-target="#registerModal{{ athlete.id }}">
+                                Register
+                            </button>
+                        </td>
+                    </tr>
+
+                    <!-- MODAL -->
+                    <div class="modal fade"
+                         id="registerModal{{ athlete.id }}"
+                         tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content p-3">
+
+                                <form method="post">
+                                    {% csrf_token %}
+
+                                    <input type="hidden"
+                                           name="athlete_id"
+                                           value="{{ athlete.id }}">
+
+                                    <h6 class="font-weight-bold mb-2">
+                                        Select Events / Categories
+                                    </h6>
+
+                                    {% for category in categories %}
+                                    <div class="form-check">
+                                        <input class="form-check-input"
+                                               type="checkbox"
+                                               name="category"
+                                               value="{{ category.id }}"
+                                               id="cat{{ athlete.id }}{{ category.id }}">
+                                        <label class="form-check-label"
+                                               for="cat{{ athlete.id }}{{ category.id }}">
+                                            {{ category.name }}
+                                        </label>
+                                    </div>
+                                    {% endfor %}
+
+                                    <button type="submit"
+                                            class="btn btn-success mt-3">
+                                        Save Events
+                                    </button>
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+<div class="modal fade" id="addAthleteModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content p-4">
+
+            <h5 class="mb-3">Register New Athlete</h5>
+
+            <form method="post" action="{% url 'athlete_create' %}">
+                {% csrf_token %}
+
+                <input type="hidden"
+                       name="tournament"
+                       value="{{ tournament.id }}">
+
+                {{ athlete_form.as_p }}
+
+                <button type="submit" class="btn btn-success">
+                    Save Athlete & Register
+                </button>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('athleteSearch').addEventListener('keyup', function () {
+    let query = this.value.toLowerCase();
+    document.querySelectorAll('.athlete-row').forEach(row => {
+        let name = row.dataset.name;
+        let country = row.dataset.country;
+
+        if (name.includes(query) || country.includes(query)) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+});
+</script>
+
+{% endblock %}
