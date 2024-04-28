@@ -1,3 +1,43 @@
 from django.contrib import admin
+from .models import (
+    Athlete, Coach, Staff, Media, Country, Belt, Category, RoleType, Club, Accommodation, Team, Membership
+)
 
-# Register your models here.
+@admin.register(Athlete)
+class AthleteAdmin(admin.ModelAdmin):
+    list_display = (
+        'name',
+        'passport_photo',
+        'country',
+        'region',
+        'dob',
+        'weight',
+        'get_categories',
+        'belt',
+        'coach',
+    )
+
+    search_fields = (
+        'name',
+        'passport',
+        'region__name',
+        'region__county',
+        'country__name',
+    )
+
+    list_filter = (
+        'country',
+        'category',
+        'region',
+        'belt',
+        'coach',
+    )
+
+    autocomplete_fields = ('country', 'region', 'coach')
+
+    def get_categories(self, obj):
+        return ", ".join(category.get_name_display() for category in obj.category.all())
+
+    get_categories.short_description = 'Categories'
+
+    
