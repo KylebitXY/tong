@@ -40,4 +40,15 @@ class AthleteAdmin(admin.ModelAdmin):
 
     get_categories.short_description = 'Categories'
 
+@admin.register(Coach)
+class CoachAdmin(admin.ModelAdmin):
+    list_display = ('name', 'passport_photo', 'country', 'region', 'dob', 'level', 'belt', 'is_athlete','get_categories')
+    search_fields = ('name', 'passport', 'country__name')
+    list_filter = ('country', 'level', 'belt')
+    def get_categories(self, obj):
+        # Access the many-to-many field correctly
+        return ", ".join([category.name for category in obj.category.all()])
+    get_categories.short_description = 'Categories'
+    
+
     
