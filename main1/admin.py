@@ -51,4 +51,9 @@ class CoachAdmin(admin.ModelAdmin):
     get_categories.short_description = 'Categories'
     
 
+@admin.register(Staff)
+class StaffAdmin(admin.ModelAdmin):
+    list_display = ('name', 'passport_photo', 'gender', 'id_passport_number', 'role', 'contacts')
+    search_fields = ('name', 'id_passport_number', 'role')
+    list_filter = ('role', 'gender')
     
