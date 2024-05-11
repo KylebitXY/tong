@@ -57,3 +57,8 @@ class StaffAdmin(admin.ModelAdmin):
     search_fields = ('name', 'id_passport_number', 'role')
     list_filter = ('role', 'gender')
     
+@admin.register(Media)
+class MediaAdmin(admin.ModelAdmin):
+    list_display = ('name', 'passport_photo', 'id_passport_number', 'role', 'contacts', 'media_house')
+    search_fields = ('name', 'id_passport_number', 'role', 'media_house')
+    list_filter = ('role', 'gender')
