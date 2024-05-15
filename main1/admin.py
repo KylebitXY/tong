@@ -62,3 +62,9 @@ class MediaAdmin(admin.ModelAdmin):
     list_display = ('name', 'passport_photo', 'id_passport_number', 'role', 'contacts', 'media_house')
     search_fields = ('name', 'id_passport_number', 'role', 'media_house')
     list_filter = ('role', 'gender')
+
+
+@admin.register(Country)
+class CountryAdmin(admin.ModelAdmin):
+    list_display = ('name', 'joined_date')
+    search_fields = ('name',)
