@@ -68,3 +68,9 @@ class MediaAdmin(admin.ModelAdmin):
 class CountryAdmin(admin.ModelAdmin):
     list_display = ('name', 'joined_date')
     search_fields = ('name',)
+
+
+@admin.register(Belt)
+class BeltAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+    search_fields = ('name',)
