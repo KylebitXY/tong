@@ -90,4 +90,10 @@ class RoleTypeAdmin(admin.ModelAdmin):
 class ClubAdmin(admin.ModelAdmin):
     list_display = ('name', 'county', 'joined_date')
     search_fields = ('name', 'county')
-    list_filter = ('county',)      
+    list_filter = ('county',)  
+    
+@admin.register(Accommodation)
+class AccommodationAdmin(admin.ModelAdmin):
+    list_display = ('name', 'address', 'contact_number', 'joined_date')
+    search_fields = ('name', 'address')
+    list_filter = ('joined_date',)        
