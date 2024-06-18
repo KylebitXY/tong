@@ -96,4 +96,10 @@ class ClubAdmin(admin.ModelAdmin):
 class AccommodationAdmin(admin.ModelAdmin):
     list_display = ('name', 'address', 'contact_number', 'joined_date')
     search_fields = ('name', 'address')
-    list_filter = ('joined_date',)        
+    list_filter = ('joined_date',)     
+    
+@admin.register(Team)
+class TeamAdmin(admin.ModelAdmin):
+    list_display = ('name', 'country', 'category')
+    search_fields = ('name', 'country__name')
+    list_filter = ('country', 'category')       
