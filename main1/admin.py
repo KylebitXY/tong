@@ -103,3 +103,10 @@ class TeamAdmin(admin.ModelAdmin):
     list_display = ('name', 'country', 'category')
     search_fields = ('name', 'country__name')
     list_filter = ('country', 'category')       
+    
+@admin.register(Membership)
+class MembershipAdmin(admin.ModelAdmin):
+    list_display = ('team', 'athlete', 'joined_date')
+    search_fields = ('team__name', 'athlete__name')
+    list_filter = ('team', 'athlete')
+    
