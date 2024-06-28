@@ -86,7 +86,7 @@ class RoleTypeAdmin(admin.ModelAdmin):
     list_display = ('name',)
     search_fields = ('name',)    
  
- @admin.register(Club)
+@admin.register(Club)
 class ClubAdmin(admin.ModelAdmin):
     list_display = ('name', 'county', 'joined_date')
     search_fields = ('name', 'county')
