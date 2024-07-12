@@ -120,6 +120,9 @@ TIME_ZONE = "UTC"
 USE_I18N = True
 
 USE_TZ = True
+
+SITE_ID = 1 
+
 LOGIN_URL = '/login/'
 
 LOGIN_REDIRECT_URL = '/'  # URL where users are redirected after login
