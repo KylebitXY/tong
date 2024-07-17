@@ -83,12 +83,30 @@ WSGI_APPLICATION = "tongmoodoo.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+if os.environ.get('USE_SQLITE', 'false') == 'true':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'mssql',
+            'NAME': 'tongil',
+            'USER': 'sa',
+            'PASSWORD': 'Rastafari2$$',
+            'HOST' : 'DESKTOP-U92A0HU',
+            #'PASSWORD': 'arcute,2014#',
+            #'HOST': '197.248.202.105',
+            'PORT': '1433',
+            'OPTIONS': {
+                'driver': 'ODBC Driver 18 for SQL Server',
+                'extra_params': 'TrustServerCertificate=yes;'
+            },
+        }
+    }
 
 
 # Password validation
