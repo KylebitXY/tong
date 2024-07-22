@@ -94,12 +94,12 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'mssql',
-            'NAME': 'tongil',
+            'NAME': '',
             'USER': 'sa',
-            'PASSWORD': 'Rastafari2$$',
-            'HOST' : 'DESKTOP-U92A0HU',
-            #'PASSWORD': 'arcute,2014#',
-            #'HOST': '197.248.202.105',
+            'PASSWORD': '',
+            'HOST' : '',
+            #'PASSWORD': '',
+            #'HOST': '',
             'PORT': '1433',
             'OPTIONS': {
                 'driver': 'ODBC Driver 18 for SQL Server',
