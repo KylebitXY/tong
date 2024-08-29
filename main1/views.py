@@ -23,8 +23,10 @@ import datetime
 from .utils import *
 
 from docx import Document
-from docx2pdf import convert  
-logger = logging.getLogger(__name__)
+try:
+    from docx2pdf import convert
+except ImportError:
+    convert = Nonelogger = logging.getLogger(__name__)
 
 @login_required
 def coach_dashboard(request):
@@ -643,7 +645,10 @@ def generate_pdf1(request, tournament_id, athlete_id):
     doc.save(docx_output)
 
     # Convert DOCX → PDF
-    convert(docx_output, pdf_output)
+    if convert:
+        convert(docx_file, pdf_file)
+    else:
+            print("docx2pdf not available in Docker/Linux")
 
     # Serve PDF
     with open(pdf_output, 'rb') as f:
