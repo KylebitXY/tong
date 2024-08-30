@@ -99,15 +99,7 @@ spacy==3.8.7
 spacy-legacy==3.0.12
 spacy-loggers==1.0.5
 
-Sphinx==8.2.3
-sphinx-rtd-theme==3.0.2
 
-sphinxcontrib-applehelp==2.0.0
-sphinxcontrib-devhelp==2.0.0
-sphinxcontrib-htmlhelp==2.1.0
-sphinxcontrib-jsmath==1.0.1
-sphinxcontrib-qthelp==2.0.0
-sphinxcontrib-serializinghtml==2.0.0
 
 SQLAlchemy==2.0.41
 sqlparse==0.5.3
